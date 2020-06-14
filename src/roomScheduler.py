@@ -3,7 +3,6 @@ import datetime
 
 #Function to read rooms information from a text file and return an array
 def readRoomInfoFromTextFile():
-        output_2d_list = []
         current_working_directory = os.path.abspath('.')
         for filename in os.listdir(current_working_directory):
             if filename.endswith('.txt'):
@@ -11,20 +10,16 @@ def readRoomInfoFromTextFile():
                 # Ensuring that if something goes wrong during read, that the program exits gracefully.
                 try:
                     with open(filename, 'r') as current_file:
-                        insideArray = []
+                        roomsInfo = []
 
                         # Reads each line of the file, and creates a 1d list of each point: e.g. [1,2].
                         for line in current_file.readlines():
                             point = line.split(' ')
                             for i in [line.split(',') for line in point]:
-                                  insideArray.append(i)
-                           # point_as_array = insideArray
+                                  roomsInfo.append(i)
                 except IOError:
                     print("Something went wrong when attempting to read file.")
-
-        # For testing purposes to see the output of the script.
-        # In production, you would be working with output_2d_list as a variable instead.
-        return insideArray
+        return roomsInfo
 
 #Function to convert string to time
 def convertToTime(timeToConvert):
@@ -40,7 +35,9 @@ def getAvailableRooms(roomsInfo, meetingStartTime, meetingEndTime):
             if (j % 2 == 1):
                 roomAvailableFrom = convertToTime(i[j])
                 roomAvailableTill = convertToTime(i[j+1])
+                #Checking the number of participants a meeting room can hold
                 if i[2] <= noofParticipants:
+                    #condition to check meeting room is available in the given time slot
                     if roomAvailableFrom <= meetingStartTime:
                          if roomAvailableTill >= meetingEndTime:
                                availableRooms.append([i[0],i[1]])
@@ -65,12 +62,12 @@ print(noofParticipants , participantsFloor , meetingStartTime , meetingEndTime)
 #Read rooms information from text file and insert the values into an array
 roomsInfo = readRoomInfoFromTextFile()
 
-#Get list of rooms available during the given time period
 meetingStartTime = convertToTime(meetingStartTime)
 meetingEndTime = convertToTime(meetingEndTime)
+#Get list of rooms available during the given time period
 availableRooms = getAvailableRooms(roomsInfo,meetingStartTime, meetingEndTime)
 
-#Get nearest room
+#Get nearest room based on floor number
 if len(availableRooms) >= 1:
    floors = []
    for room in availableRooms:
